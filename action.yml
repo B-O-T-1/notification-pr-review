@@ -8,8 +8,8 @@ inputs:
     description: "webhook url"
     required: true
   user_table:
-    description: "{github email id, discord user id} , json type"
-    required: false
+    description: "{github username, discord user id} , json type"
+    required: true
 runs:
   using: "node16"
   main: "index.js"

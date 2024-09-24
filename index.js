@@ -4,21 +4,15 @@ const axios = require("axios");
 const { Webhook, MessageBuilder } = require("discord-webhook-node");
 
 const token = core.getInput("token");
-const hook = new Webhook(core.getInput("webhook_url"));
+const webhookUrl = core.getInput("webhook_url");
+const userTable = JSON.parse(core.getInput("user_table"));
 
-if (!token || !webhookUrl) {
-  core.setFailed("Token and Webhook URL are required inputs.");
+if (!token || !webhookUrl || !userTable) {
+  core.setFailed("Token, userTable and Webhook URL are required inputs.");
   return;
 }
 
-const fetchUser = (url) =>
-  axios({
-    method: "get",
-    headers: {
-      Authorization: `token ${token}`,
-    },
-    url,
-  }).then((res) => res.data);
+const hook = new Webhook(webhookUrl);
 
 const sendDiscord = async (message) => {
   try {
@@ -29,23 +23,17 @@ const sendDiscord = async (message) => {
   }
 };
 
-const reviewEmbed = ({ repoName, title, url, email }) => {
-  let [name] = email.split("@")[0];
-  if (core.getInput("user_table")) {
-    const userTable = JSON.parse(core.getInput("user_table"));
-    name = userTable[name];
-  }
+const reviewEmbed = ({ repoName, title, url, username }) => {
+  const name = userTable[username];
 
   const embed = new MessageBuilder()
-    .setTitle("리뷰 요청을 받았어요 😊")
-    .setDescription(`@${name} 님에게 새로운 리뷰 요청이 도착했습니다`)
-    .addField(`${repoName}`, `[${title}](${url})`)
+    .setTitle("리뷰 요청을 받았어요 🙂")
+    .addField(" ", `<@${name}>`)
+    .addField(` `, `[${title}](${url})`)
     .setColor("#e0b88a")
     .addField(" ", "")
-    .setThumbnail("https://avatars.githubusercontent.com/u/164152763?s=200&v=4")
-    .setFooter(
-      "코테스터디 봇",
-      "https://avatars.githubusercontent.com/u/164152763?s=200&v=4"
+    .setThumbnail(
+      "https://github.com/user-attachments/assets/23ca5221-eced-471d-9525-4cdd8c18536a"
     )
     .setTimestamp();
 
@@ -74,24 +62,15 @@ const reviewEmbed = ({ repoName, title, url, email }) => {
       return;
     }
 
-    const { login, url } = requestedReviewer;
+    const { login } = requestedReviewer; // username
 
     core.notice(`Sender: ${sender.login}, Receiver: ${login}, PR: ${prUrl}`);
     core.info(`'${sender.login}' requests a pr review for ${title}(${prUrl})`);
-    core.info(`Fetching information about '${login}'...`);
+    core.info(`Sending a discord msg to '${(login, userTable[login])}'...`);
 
-    const { email } = await fetchUser(url);
-
-    core.info(`Sending a slack msg to '${login}'...`);
-
-    if (!email) {
-      core.warning(`Failed: '${login}' has no public email.`);
-      core.notice(`Failed: '${login}' has no public email.`);
-
-      return;
-    }
-
-    await sendDiscord(reviewEmbed({ repoName, title, url: prUrl, email }));
+    await sendDiscord(
+      reviewEmbed({ repoName, title, url: prUrl, username: login })
+    );
 
     core.info("Successfully sent");
     core.notice("Successfully sent");
