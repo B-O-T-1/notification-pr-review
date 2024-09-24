@@ -13,7 +13,7 @@ jobs:
   runs-on: ubuntu-latest
   steps:
     - name: PR Review Notification
-      uses: oris8/notification-pr-review@v0.1.0
+      uses: oris-8/notification-pr-review@v0.1.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         webhook_url: ${{ secrets.WEBHOOK_URL }}
