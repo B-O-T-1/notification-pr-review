@@ -1,6 +1,6 @@
 # PR Review Notification
 
-PR 리뷰 요청을 받으면 Slack으로 알리는 Github Actions
+PR 리뷰 요청을 받으면 Discord로 알리는 Github Actions
 
 ```yml
 name: PR Review Notification
