@@ -1,0 +1,18 @@
+name: "PR Review Notification"
+description: "discord webhook Notification"
+inputs:
+  token:
+    description: "GitHub token"
+    required: true
+  webhook_url:
+    description: "webhook url"
+    required: true
+  user_table:
+    description: "{github email id, discord user id} , json type"
+    required: false
+runs:
+  using: "node16"
+  main: "index.js"
+branding:
+  icon: "check-circle"
+  color: "blue"
