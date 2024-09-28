@@ -1,14 +1,14 @@
-name: "PR Review Notification"
-description: "discord webhook Notification"
+name: "Notification PR Review"
+description: "Discord Webhook Notification"
 inputs:
-  token:
-    description: "GitHub token"
-    required: true
+  image_url:
+    description: "Discord Message Image"
+    required: false
   webhook_url:
-    description: "webhook url"
+    description: "Discord Webhook Url"
     required: true
   user_table:
-    description: "{github username, discord user id} , json type"
+    description: "An object in JSON format containing two fields: 'githubUsername' (a string representing the user's GitHub username) and 'discordUserId' (a string or number representing the user's Discord ID)."
     required: true
 runs:
   using: "node16"

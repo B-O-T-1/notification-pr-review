@@ -1,14 +1,12 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
-const axios = require("axios");
 const { Webhook, MessageBuilder } = require("discord-webhook-node");
 
-const token = core.getInput("token");
 const webhookUrl = core.getInput("webhook_url");
 const userTable = JSON.parse(core.getInput("user_table"));
 
-if (!token || !webhookUrl || !userTable) {
-  core.setFailed("Token, userTable and Webhook URL are required inputs.");
+if (!webhookUrl || !userTable) {
+  core.setFailed("userTable and Webhook URL are required inputs.");
   return;
 }
 
@@ -29,14 +27,14 @@ const reviewEmbed = ({ repoName, title, url, username }) => {
   const embed = new MessageBuilder()
     .setTitle("리뷰 요청을 받았어요 🙂")
     .addField(" ", `<@${name}>`)
-    .addField(` `, `[${title}](${url})`)
+    .addField(` `, `${repoName} [${title}](${url})`)
     .setColor("#e0b88a")
     .addField(" ", "")
-    .setThumbnail(
-      "https://github.com/user-attachments/assets/23ca5221-eced-471d-9525-4cdd8c18536a"
-    )
     .setTimestamp();
 
+  if (core.getInput("image_url")) {
+    embed.setThumbnail(core.getInput("image_url"));
+  }
   return embed;
 };
 
